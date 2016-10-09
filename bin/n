@@ -7,8 +7,11 @@
 VERSION="2.1.3"
 UP=$'\033[A'
 DOWN=$'\033[B'
-N_PREFIX=${N_PREFIX-/usr/local}
+# N_PREFIX=${N_PREFIX-/usr/local}
+N_PREFIX=/opt
+NODE_HOME=/opt/node
 BASE_VERSIONS_DIR=$N_PREFIX/n/versions
+NODE_MIRROR=https://npm.taobao.org/mirrors/node/ # ali morror
 
 #
 # Log <type> <msg>
@@ -450,18 +453,32 @@ disable_pax_mprotect() {
 # Activate <version>
 #
 
+# activate() {
+#   local version=$1
+#   check_current_version
+#   if test "$version" != "$active"; then
+#     local dir=$BASE_VERSIONS_DIR/$version
+#     # copy each dir from n
+#     for subdir in bin lib include share; do
+#       if test -L "$N_PREFIX/$subdir"; then
+#         find "$dir/$subdir" -mindepth 1 -maxdepth 1 -exec cp -fR "{}" "$N_PREFIX/$subdir" \;
+#       else
+#         cp -fR "$dir/$subdir" $N_PREFIX
+#       fi
+#     done
+#     disable_pax_mprotect "$N_PREFIX/bin/node"
+#   fi
+# }
+
 activate() {
   local version=$1
   check_current_version
   if test "$version" != "$active"; then
     local dir=$BASE_VERSIONS_DIR/$version
-    for subdir in bin lib include share; do
-      if test -L "$N_PREFIX/$subdir"; then
-        find "$dir/$subdir" -mindepth 1 -maxdepth 1 -exec cp -fR "{}" "$N_PREFIX/$subdir" \;
-      else
-        cp -fR "$dir/$subdir" $N_PREFIX
-      fi
-    done
+    if test -L $NODE_HOME; then
+      rm $NODE_HOME
+    fi
+    ln -s $dir $NODE_HOME
     disable_pax_mprotect "$N_PREFIX/bin/node"
   fi
 }
