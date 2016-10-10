@@ -12,6 +12,8 @@ N_PREFIX=/opt
 NODE_HOME=/opt/node
 BASE_VERSIONS_DIR=$N_PREFIX/n/versions
 NODE_MIRROR=https://npm.taobao.org/mirrors/node/ # ali morror
+NPM_HOME=/home/Swen/npm-global
+NPM_VERSIONS_DIR=$NPM_HOME/versions
 
 #
 # Log <type> <msg>
@@ -91,6 +93,16 @@ DEFAULT=0
 QUIET=true
 ACTIVATE=true
 ARCH=
+
+#
+# get major version
+#
+get_major_version() {
+  local version=$1
+  local major=$(echo $version | grep -o -E '[0-9]+' | head -1 | sed -e 's/^0\+//')
+  test -z $major && major=0
+  echo v$major
+}
 
 #
 # set_default <BIN_NAME>
