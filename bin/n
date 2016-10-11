@@ -491,8 +491,26 @@ activate() {
       rm $NODE_HOME
     fi
     ln -s $dir $NODE_HOME
+    change_npm_global $version
     disable_pax_mprotect "$N_PREFIX/bin/node"
   fi
+}
+
+change_npm_global() {
+  local BIN=$NPM_HOME/bin
+  local LIB=$NPM_HOME/lib
+  local major=$(get_major_version $1)
+  local vDIR=$NPM_VERSIONS_DIR/$major
+  if [[ ! -d $vDIR ]] ; then
+    mkdir $vDIR && mkdir $vDIR/bin && mkdir $vDIR/lib
+  fi
+  if test -L $BIN; then
+    rm $BIN
+  fi
+  if test -L $LIB; then
+    rm $LIB
+  fi
+  ln -s	$vDIR/bin $BIN && ln -s $vDIR/lib $LIB
 }
 
 #
